@@ -338,3 +338,23 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/ConsoleApplication3/targetver.h
+/ConsoleApplication3/stdafx.h
+/ConsoleApplication3/stdafx.cpp
+/ConsoleApplication3/sqlite3.dll
+/ConsoleApplication3/sqlite3.def
+/ConsoleApplication3/sfml-window-d-2.dll
+/ConsoleApplication3/sfml-window-2.dll
+/ConsoleApplication3/sfml-system-d-2.dll
+/ConsoleApplication3/sfml-system-2.dll
+/ConsoleApplication3/sfml-network-d-2.dll
+/ConsoleApplication3/sfml-network-2.dll
+/ConsoleApplication3/sfml-graphics-d-2.dll
+/ConsoleApplication3/sfml-graphics-2.dll
+/ConsoleApplication3/sfml-audio-d-2.dll
+/ConsoleApplication3/sfml-audio-2.dll
+/ConsoleApplication3/ReadMe.txt
+/ConsoleApplication3/openal32.dll
+/ConsoleApplication3/ConsoleApplication3.vcxproj.filters
+/ConsoleApplication3/ConsoleApplication3.vcxproj
+/ConsoleApplication3.sln
