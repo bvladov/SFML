@@ -1,10 +1,10 @@
 #include "MenuItem.h"
 
-MenuItem::MenuItem(std::string title, sf::RenderWindow& window) : m_icon()
+MenuItem::MenuItem(std::string title, sf::Vector2f size) : m_icon()
 {
 	m_title = title;
 	m_isClicked = false;
-	m_menuItem.setSize({ 50,50 });
+	m_menuItem.setSize(size);
 	m_menuItem.setFillColor(sf::Color::White);
 }
 

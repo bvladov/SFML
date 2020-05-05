@@ -6,18 +6,19 @@
 
 class Paint {
   public:
-    Paint(sf::Vector2f);
+    Paint(unsigned int, unsigned int, std::string);
     ~Paint();
+
+    void run();
+    void setMenuBar(MenuBar&);
 
   protected:
     sf::RenderWindow m_window;
 
+     
+  private:
 
   private:
-    void setMenuBar(MenuBar&);
-
-  private:
-    sf::Vector2f m_coords;
     std::string  m_title;
     MenuBar*     m_menuBar;
 };

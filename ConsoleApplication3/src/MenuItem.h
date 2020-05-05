@@ -7,7 +7,7 @@
 class MenuItem
 {
 public:
-		MenuItem(std::string, sf::RenderWindow& window);
+		MenuItem(std::string, sf::Vector2f);
 		MenuItem(const MenuItem&);
 		MenuItem& operator=(const MenuItem&);
 		~MenuItem();

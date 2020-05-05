@@ -10,8 +10,8 @@ public:
 	MenuBar();
 	~MenuBar();
 
-	void draw();
-	void addItem(std::string);
+	void draw(sf::RenderWindow&);
+	void addItem(std::string, sf::Vector2f);
 
 
 private:
