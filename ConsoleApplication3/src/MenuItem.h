@@ -3,11 +3,12 @@
 
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include "State.h"
 
 class MenuItem
 {
 public:
-    MenuItem(std::string title, sf::Vector2f size, sf::Vector2f position, std::string iconPath);
+    MenuItem(std::string title, sf::Vector2f size, sf::Vector2f position, std::string iconPath, State state);
     MenuItem(const MenuItem&);
     MenuItem& operator=(const MenuItem& other);
     ~MenuItem();
@@ -15,7 +16,7 @@ public:
     void setIcon(std::string filename);
     void clearIcon();
     void draw(sf::RenderWindow& window);
-    void interact(sf::Vector2i& mouseCoords);
+    State interact(sf::Vector2i& mouseCoords);
 
     sf::RectangleShape m_menuItem;
 
@@ -23,6 +24,7 @@ private:
     bool isClicked() const;
     bool isHovered() const;
 
+    void copyFrom(const MenuItem& other);
     void setScale(float factor);
     void hover();
     void click();
@@ -37,6 +39,7 @@ private:
     bool               m_isHovered;
     std::string        m_title;
     float              m_scale;
+    State              m_state;
 };
 
 #endif // !H_MENUITEM_H

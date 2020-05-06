@@ -1,8 +1,9 @@
 #ifndef H_PAINT_H
 #define H_PAINT_H
 
-#include <SFML/Graphics.hpp>
 #include "MenuBar.h"
+#include "State.h"
+
 
 class Paint {
   public:
@@ -12,15 +13,17 @@ class Paint {
     void run();
     void setMenuBar(MenuBar& menuBar);
 
-  protected:
+  private:
     sf::RenderWindow m_window;
+    void putPixel(sf::Vector2i pos, sf::Color color);
+    void pencilLogic();
+    void draw();
 
-     
-  private:
-
-  private:
-    std::string  m_title;
-    MenuBar*     m_menuBar;
+    std::vector<sf::RectangleShape> m_scene;
+    std::string                     m_title;
+    MenuBar*                        m_menuBar;
+    State                           m_state;
+    sf::Color                       m_drawColour;
 };
 
 #endif // !H_PAINT_H

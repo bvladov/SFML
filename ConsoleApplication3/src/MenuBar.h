@@ -11,8 +11,8 @@ public:
   ~MenuBar();
 
   void draw(sf::RenderWindow& window);
-  void addItem(std::string title, std::string iconPath);
-  void interact(sf::RenderWindow& window);
+  void addItem(std::string title, std::string iconPath, State state);
+  void interact(sf::RenderWindow& window, State& oldState);
 
 private:
   void defaultSetup();
