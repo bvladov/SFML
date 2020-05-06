@@ -6,11 +6,11 @@
 
 class Paint {
   public:
-    Paint(unsigned int, unsigned int, std::string);
+    Paint(unsigned int height, unsigned int width, std::string windowTitle);
     ~Paint();
 
     void run();
-    void setMenuBar(MenuBar&);
+    void setMenuBar(MenuBar& menuBar);
 
   protected:
     sf::RenderWindow m_window;

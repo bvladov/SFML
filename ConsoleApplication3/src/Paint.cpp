@@ -5,9 +5,10 @@ using std::endl;
 
 Paint::Paint(unsigned int height, unsigned int width, std::string windowTitle)
   : m_window(sf::VideoMode(width,  height), windowTitle)
+  , m_menuBar(new MenuBar(m_window))
 {
-  m_menuBar = new MenuBar();
-  m_title   = windowTitle;
+  m_title = windowTitle;
+  m_window.setFramerateLimit(60);
 }
 
 Paint::~Paint()
@@ -41,9 +42,10 @@ void Paint::run()
 
     }
 
-    m_window.clear();
+    m_window.clear(sf::Color::White);
     //draw(window, scene);
     //window.draw(m_menuItem);
+    m_menuBar->interact(m_window);
     m_menuBar->draw(m_window);
     m_window.display();
   }

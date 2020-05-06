@@ -3,8 +3,8 @@
 #include <string>
 #include "Paint.h"
 using namespace std;
-#define WIDTH  800
-#define HEIGHT 600
+#define WIDTH  1024
+#define HEIGHT 768
 
 void putPixel(sf::Vector2f pos, sf::Uint8 color, sf::RenderWindow& window, vector<sf::RectangleShape>& scene)
 {
@@ -33,10 +33,7 @@ void logic(sf::Event& event, sf::RenderWindow& window, vector<sf::RectangleShape
 int main()
 {
   Paint paint(HEIGHT, WIDTH, "Paint");
-  MenuBar* menuBar = new MenuBar();
-  menuBar->addItem("first", { 150,150 });
-  paint.setMenuBar(*menuBar);
-
+  
   paint.run();
 
   return 0;

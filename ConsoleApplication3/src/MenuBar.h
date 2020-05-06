@@ -7,20 +7,24 @@
 class MenuBar
 {
 public:
-	MenuBar();
-	~MenuBar();
+  MenuBar(sf::RenderWindow& window);
+  ~MenuBar();
 
-	void draw(sf::RenderWindow&);
-	void addItem(std::string, sf::Vector2f);
-
-
-private:
-
+  void draw(sf::RenderWindow& window);
+  void addItem(std::string title, std::string iconPath);
+  void interact(sf::RenderWindow& window);
 
 private:
-	sf::RectangleShape    m_menuBar;
-	std::vector<MenuItem> m_items;
-	int                   m_nbItems;
+  void defaultSetup();
+
+private:
+  sf::RectangleShape    m_menuBar;
+  std::vector<MenuItem> m_items;
+  int                   m_numItems;
+  float                 m_btnMaxX;
+  float                 m_btnMinX;
+  float                 m_btnMaxY;
+  float                 m_btnMinY;
 };
 
 #endif // !H_MENUBAR_H

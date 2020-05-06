@@ -7,30 +7,36 @@
 class MenuItem
 {
 public:
-		MenuItem(std::string, sf::Vector2f);
-		MenuItem(const MenuItem&);
-		MenuItem& operator=(const MenuItem&);
-		~MenuItem();
+    MenuItem(std::string title, sf::Vector2f size, sf::Vector2f position, std::string iconPath);
+    MenuItem(const MenuItem&);
+    MenuItem& operator=(const MenuItem& other);
+    ~MenuItem();
 
+    void setIcon(std::string filename);
+    void clearIcon();
+    void draw(sf::RenderWindow& window);
+    void interact(sf::Vector2i& mouseCoords);
 
-		void setIcon(std::string);
-		void clearIcon();
-		bool isClicked() const;
-		void draw(sf::RenderWindow&);
-
-		void render();
-		void run();
+    sf::RectangleShape m_menuItem;
 
 private:
-		void init();
+    bool isClicked() const;
+    bool isHovered() const;
 
-		sf::RenderWindow   sf_window;
-		sf::Event          sf_event;
-		sf::Texture        m_icon;
+    void setScale(float factor);
+    void hover();
+    void click();
+    void unclick();
+    void reset();
 
-		bool               m_isClicked;
-		std::string        m_title;
-		sf::RectangleShape m_menuItem;
+    sf::RenderWindow   sf_window;
+    sf::Event          sf_event;
+    sf::Texture*       m_icon;
+
+    bool               m_isClicked;
+    bool               m_isHovered;
+    std::string        m_title;
+    float              m_scale;
 };
 
 #endif // !H_MENUITEM_H
