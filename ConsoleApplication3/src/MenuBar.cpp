@@ -13,6 +13,8 @@ MenuBar::MenuBar(sf::RenderWindow& window) : m_numItems(0)
   m_btnMaxY =  m_menuBar.getSize().y * 0.98f;
   m_btnMinY =  m_menuBar.getSize().y * 0.02f;
 
+  m_barWidth = m_menuBar.getSize().x + m_menuBar.getOutlineThickness();
+
   defaultSetup();
 }
 
@@ -72,4 +74,9 @@ void MenuBar::addItem(std::string title, std::string iconPath, State state)
 
   m_items.push_back(item);
   ++m_numItems;
+}
+
+const int MenuBar::getBarWidth() const
+{
+  return m_barWidth;
 }

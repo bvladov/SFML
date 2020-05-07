@@ -1,6 +1,9 @@
 #include <assert.h>
 #include "Paint.h"
 #include "State.h"
+
+#define DELTA 60
+
 using std::cout;
 using std::endl;
 
@@ -12,6 +15,7 @@ Paint::Paint(unsigned int height, unsigned int width, std::string windowTitle)
   m_title      = windowTitle;
   m_state      = State::MOUSE_CURSOR;
   m_drawColour = sf::Color::Black;
+  m_scene.reserve(height * width);
 }
 
 Paint::~Paint()
@@ -61,14 +65,33 @@ void Paint::setMenuBar(MenuBar& menuBar)
   m_menuBar = &menuBar;
 }
 
-void Paint::putPixel(sf::Vector2i pos, sf::Color color)
+void Paint::putPixel(sf::Vector2i pos, sf::Color color, bool connect)
 {
   sf::RectangleShape pixel;
-  pixel.setSize({ 2,2 });
   pixel.setPosition(sf::Vector2f(pos));
   pixel.setFillColor(color);
+  if (m_scene.empty())
+  {
+    pixel.setSize({ 2,2 });
+  }
+  else
+  {
+    pixel.setSize({ getDistance(pixel, m_scene.back()), 2 });
+
+    float angle = 180 - atan2(m_scene.back().getPosition().y - pixel.getPosition().y
+                            , pixel.getPosition().x - m_scene.back().getPosition().x) * 180 / 3.1415 ;
+    cout << "angle = " << -angle << endl;
+
+    pixel.setRotation(angle);
+  }
+
   m_scene.push_back(pixel);
-  std::cout << "New rectangle at (" << pos.x << "," << pos.y << ")" << std::endl;
+}
+
+float Paint::getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b)
+{
+  return sqrt( (b.getPosition().x - a.getPosition().x) * (b.getPosition().x - a.getPosition().x)
+             + (b.getPosition().y - a.getPosition().y) * (b.getPosition().y - a.getPosition().y));
 }
 
 void Paint::draw()
@@ -81,9 +104,12 @@ void Paint::draw()
 
 void Paint::pencilLogic()
 {
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left) 
+   && sf::Mouse::getPosition(m_window).x > m_menuBar->getBarWidth()
+   && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x) 
+   && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
   {
-    putPixel(sf::Mouse::getPosition(m_window), m_drawColour);
+    putPixel(sf::Mouse::getPosition(m_window), m_drawColour, true);
   }
 
   draw();

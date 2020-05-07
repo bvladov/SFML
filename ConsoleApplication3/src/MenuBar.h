@@ -13,6 +13,7 @@ public:
   void draw(sf::RenderWindow& window);
   void addItem(std::string title, std::string iconPath, State state);
   void interact(sf::RenderWindow& window, State& oldState);
+  const int getBarWidth() const;
 
 private:
   void defaultSetup();
@@ -21,6 +22,7 @@ private:
   sf::RectangleShape    m_menuBar;
   std::vector<MenuItem> m_items;
   int                   m_numItems;
+  int                   m_barWidth;
   float                 m_btnMaxX;
   float                 m_btnMinX;
   float                 m_btnMaxY;
