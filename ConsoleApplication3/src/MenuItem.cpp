@@ -7,6 +7,7 @@ MenuItem::MenuItem(std::string title, sf::Vector2f size, sf::Vector2f position, 
   m_menuItem.setSize(size);
   m_menuItem.setPosition(position);
   m_icon = new sf::Texture();
+  m_icon->setSmooth(true);
   setIcon(iconPath);
   m_menuItem.setTexture(m_icon);
   m_state = state;
@@ -115,7 +116,6 @@ void MenuItem::unclick()
 {
   if (m_isClicked)
   {
-    std::cout << m_title << "::unclicking" << std::endl;
     m_isClicked = false;
     setScale(1 / m_scale);
   }

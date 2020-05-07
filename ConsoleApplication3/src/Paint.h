@@ -1,6 +1,7 @@
 #ifndef H_PAINT_H
 #define H_PAINT_H
 
+#include "SFML/Window/ContextSettings.hpp"
 #include "MenuBar.h"
 #include "State.h"
 

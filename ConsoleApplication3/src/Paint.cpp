@@ -28,8 +28,9 @@ void Paint::run()
 {
   while (m_window.isOpen())
   {
-    sf::Event event;
     m_window.clear(sf::Color::White);
+
+    sf::Event event;
     while (m_window.pollEvent(event))
     {
       switch (event.type)
@@ -41,7 +42,6 @@ void Paint::run()
       }
     }
     
-    m_menuBar->interact(m_window, m_state);
     switch (m_state)
     {
     case State::MOUSE_CURSOR:
@@ -51,8 +51,13 @@ void Paint::run()
       break;
     case State::LINE:
       break;
+    default:
+      break;
     }
 
+    draw();
+
+    m_menuBar->interact(m_window, m_state);
     m_menuBar->draw(m_window);
     m_window.display();
   }
@@ -80,7 +85,6 @@ void Paint::putPixel(sf::Vector2i pos, sf::Color color, bool connect)
 
     float angle = 180 - atan2(m_scene.back().getPosition().y - pixel.getPosition().y
                             , pixel.getPosition().x - m_scene.back().getPosition().x) * 180 / 3.1415 ;
-    cout << "angle = " << -angle << endl;
 
     pixel.setRotation(angle);
   }
@@ -104,13 +108,11 @@ void Paint::draw()
 
 void Paint::pencilLogic()
 {
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left) 
-   && sf::Mouse::getPosition(m_window).x > m_menuBar->getBarWidth()
-   && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x) 
-   && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
+    && sf::Mouse::getPosition(m_window).x > m_menuBar->getBarWidth()
+    && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x)
+    && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
   {
     putPixel(sf::Mouse::getPosition(m_window), m_drawColour, true);
   }
-
-  draw();
 }
