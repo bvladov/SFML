@@ -3,12 +3,15 @@
 #include <string>
 #include "Paint.h"
 using namespace std;
-#define WIDTH  900
-#define HEIGHT 900
+#define WIDTH  1000
+#define HEIGHT 1000
 
 int main()
 {
-  Paint paint(HEIGHT, WIDTH, "Paint");
+  sf::ContextSettings settings;
+  settings.antialiasingLevel = 4;
+
+  Paint paint(WIDTH, HEIGHT, "Paint", settings);
   
   paint.run();
 

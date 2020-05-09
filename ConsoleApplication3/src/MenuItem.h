@@ -31,8 +31,6 @@ private:
     void unclick();
     void reset();
 
-    sf::RenderWindow   sf_window;
-    sf::Event          sf_event;
     sf::Texture*       m_icon;
 
     bool               m_isClicked;

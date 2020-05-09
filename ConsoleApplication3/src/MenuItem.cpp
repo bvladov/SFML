@@ -7,8 +7,8 @@ MenuItem::MenuItem(std::string title, sf::Vector2f size, sf::Vector2f position, 
   m_menuItem.setSize(size);
   m_menuItem.setPosition(position);
   m_icon = new sf::Texture();
-  m_icon->setSmooth(true);
   setIcon(iconPath);
+  m_icon->setSmooth(true);
   m_menuItem.setTexture(m_icon);
   m_state = state;
 }
@@ -46,7 +46,7 @@ MenuItem::~MenuItem()
 
 void MenuItem::setIcon(std::string filename)
 {
-  assert(m_icon != nullptr);
+  //assert(m_icon != nullptr);
   m_icon->loadFromFile(filename);
 }
 

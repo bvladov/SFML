@@ -28,9 +28,10 @@ void MenuBar::defaultSetup()
   int x = m_menuBar.getSize().x;
   int y = m_menuBar.getSize().y;
 
-  addItem("Cursor", "./texture/arrow.png" , State::MOUSE_CURSOR);
+  addItem("Cursor", "./texture/arrow.png"  , State::MOUSE_CURSOR);
   addItem("Pencil", "./texture/pencil1.png", State::PENCIL);
-  addItem("Line"  , "./texture/line.png"  , State::LINE);
+  addItem("Line"  , "./texture/line.png"   , State::LINE);
+  addItem("Erase" , "./texture/eraser.png" , State::ERASE);
 }
 
 void MenuBar::draw(sf::RenderWindow& window)
