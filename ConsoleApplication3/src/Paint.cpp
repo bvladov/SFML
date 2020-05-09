@@ -7,14 +7,12 @@
 using std::cout;
 using std::endl;
 
-Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, sf::ContextSettings settings)
-  : m_window(sf::VideoMode(width,height), windowTitle, sf::Style::Default, settings)
+Paint::Paint(unsigned int height, unsigned int width, std::string windowTitle)
+  : m_window(sf::VideoMode(width,  height), windowTitle)
   , m_menuBar(new MenuBar(m_window))
-  , m_connectPixels(false)
-  , m_title(windowTitle)
-  , m_mouseLeftButtonState(ButtonState::RELEASED)
 {
   //m_window.setFramerateLimit(144);
+  m_title      = windowTitle;
   m_state      = State::MOUSE_CURSOR;
   m_drawColour = sf::Color::Black;
   m_scene.reserve(height * width);
@@ -37,40 +35,26 @@ void Paint::run()
     {
       switch (event.type)
       {
-        case sf::Event::Closed:
-          m_window.close();
-          cout << "Closing\n";
-          break;
-        case sf::Event::MouseButtonPressed:
-          if (event.mouseButton.button == sf::Mouse::Left)
-          {
-            m_mouseLeftButtonState = ButtonState::PRESSED;
-          }
-          break;
-        case sf::Event::MouseButtonReleased:
-          if (event.mouseButton.button == sf::Mouse::Left)
-          {
-            m_mouseLeftButtonState = ButtonState::RELEASED;
-          }
-          break;
+      case sf::Event::Closed:
+        m_window.close();
+        cout << "Closing\n";
+        break;
       }
     }
-
+    
     switch (m_state)
     {
     case State::MOUSE_CURSOR:
       break;
     case State::PENCIL:
-
-      drawLogic();
+      pencilLogic();
       break;
     case State::LINE:
-      //m_connectPixels = true;
       break;
-    case State::ERASE:
-      eraseLogic();
+    default:
       break;
     }
+
     draw();
 
     m_menuBar->interact(m_window, m_state);
@@ -86,12 +70,12 @@ void Paint::setMenuBar(MenuBar& menuBar)
   m_menuBar = &menuBar;
 }
 
-void Paint::putPixel(sf::Vector2i pos, sf::Color color)
+void Paint::putPixel(sf::Vector2i pos, sf::Color color, bool connect)
 {
   sf::RectangleShape pixel;
   pixel.setPosition(sf::Vector2f(pos));
   pixel.setFillColor(color);
-  if (m_scene.empty() || m_connectPixels == false)
+  if (m_scene.empty())
   {
     pixel.setSize({ 2,2 });
   }
@@ -122,35 +106,13 @@ void Paint::draw()
   }
 }
 
-void Paint::drawLogic()
+void Paint::pencilLogic()
 {
-  if (m_mouseLeftButtonState == ButtonState::RELEASED || sf::Mouse::getPosition(m_window).x < m_menuBar->getBarWidth())
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
+    && sf::Mouse::getPosition(m_window).x > m_menuBar->getBarWidth()
+    && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x)
+    && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
   {
-    m_connectPixels = false;
-  }
-
-  if (sf::Mouse::getPosition(m_window).x >= m_menuBar->getBarWidth()
-   && sf::Mouse::isButtonPressed(sf::Mouse::Left)
-   && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x)
-   && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
-  {
-    putPixel(sf::Mouse::getPosition(m_window), m_drawColour);
-    m_connectPixels = true;
-  }
-}
-
-void Paint::eraseLogic()
-{
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-  {
-    for (auto& pixel : m_scene)
-    {
-      if (pixel.getPosition().x == sf::Mouse::getPosition(m_window).x
-        && pixel.getPosition().y == sf::Mouse::getPosition(m_window).y)
-      {
-        cout << "erased" << endl;
-        pixel.setFillColor(sf::Color::White);
-      }
-    }
+    putPixel(sf::Mouse::getPosition(m_window), m_drawColour, true);
   }
 }

@@ -5,14 +5,10 @@
 #include "MenuBar.h"
 #include "State.h"
 
-enum ButtonState {
-  PRESSED  = 0,
-  RELEASED = 1
-};
 
 class Paint {
   public:
-    Paint(unsigned int width, unsigned int height, std::string windowTitle, sf::ContextSettings settings = sf::ContextSettings());
+    Paint(unsigned int height, unsigned int width, std::string windowTitle);
     ~Paint();
 
     void run();
@@ -20,9 +16,8 @@ class Paint {
 
   private:
     sf::RenderWindow m_window;
-    void putPixel(sf::Vector2i pos, sf::Color color);
-    void drawLogic();
-    void eraseLogic();
+    void putPixel(sf::Vector2i pos, sf::Color color, bool connect);
+    void pencilLogic();
     void draw();
     float getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b);
 
@@ -31,8 +26,7 @@ class Paint {
     MenuBar*                        m_menuBar;
     State                           m_state;
     sf::Color                       m_drawColour;
-    bool                            m_connectPixels;
-    bool                            m_mouseLeftButtonState;
+
 };
 
 #endif // !H_PAINT_H
