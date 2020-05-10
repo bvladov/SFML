@@ -28,7 +28,7 @@ class Paint {
 
     std::vector<sf::RectangleShape> m_scene;
     std::string                     m_title;
-    MenuBar*                        m_menuBar;
+    MenuBar                         m_menuBar;
     State                           m_state;
     sf::Color                       m_drawColour;
     bool                            m_connectPixels;

@@ -9,20 +9,19 @@ using std::endl;
 
 Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, sf::ContextSettings settings)
   : m_window(sf::VideoMode(width,height), windowTitle, sf::Style::Default, settings)
-  , m_menuBar(new MenuBar(m_window))
   , m_connectPixels(false)
+  , m_menuBar(m_window)
   , m_title(windowTitle)
   , m_mouseLeftButtonState(ButtonState::RELEASED)
 {
   //m_window.setFramerateLimit(144);
-  m_state      = State::MOUSE_CURSOR;
+  m_state      = State::EMPTY_STATE;
   m_drawColour = sf::Color::Black;
   m_scene.reserve(height * width);
 }
 
 Paint::~Paint()
 {
-  delete m_menuBar;
   m_window.close();
 }
 
@@ -56,6 +55,7 @@ void Paint::run()
       }
     }
 
+    cout << (int)m_state << '\n';
     switch (m_state)
     {
     case State::MOUSE_CURSOR:
@@ -73,17 +73,15 @@ void Paint::run()
     }
     draw();
 
-    m_menuBar->interact(m_window, m_state);
-    m_menuBar->draw(m_window);
+    m_state = m_menuBar.interact(m_window, m_state);
+    m_menuBar.draw(m_window);
     m_window.display();
   }
 }
 
 void Paint::setMenuBar(MenuBar& menuBar)
 {
-  delete m_menuBar;
-  m_menuBar = nullptr;
-  m_menuBar = &menuBar;
+
 }
 
 void Paint::putPixel(sf::Vector2i pos, sf::Color color)
@@ -124,12 +122,12 @@ void Paint::draw()
 
 void Paint::drawLogic()
 {
-  if (m_mouseLeftButtonState == ButtonState::RELEASED || sf::Mouse::getPosition(m_window).x < m_menuBar->getBarWidth())
+  if (m_mouseLeftButtonState == ButtonState::RELEASED || sf::Mouse::getPosition(m_window).x < m_menuBar.getBarWidth())
   {
     m_connectPixels = false;
   }
 
-  if (sf::Mouse::getPosition(m_window).x >= m_menuBar->getBarWidth()
+  if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth()
    && sf::Mouse::isButtonPressed(sf::Mouse::Left)
    && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x)
    && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))

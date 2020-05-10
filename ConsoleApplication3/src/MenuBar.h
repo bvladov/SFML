@@ -2,31 +2,30 @@
 #define H_MENUBAR_H
 
 #include <iostream>
-#include  "MenuItem.h"
+#include "MenuButton.h"
 
-class MenuBar
+class MenuBar : public MenuObject
 {
 public:
   MenuBar(sf::RenderWindow& window);
-  ~MenuBar();
+  virtual ~MenuBar();
 
   void draw(sf::RenderWindow& window);
   void addItem(std::string title, std::string iconPath, State state);
-  void interact(sf::RenderWindow& window, State& oldState);
+  State interact(sf::RenderWindow& window, State oldState);
   const int getBarWidth() const;
 
 private:
-  void defaultSetup();
+  void defaultButtonsSetup();
 
-private:
-  sf::RectangleShape    m_menuBar;
-  std::vector<MenuItem> m_items;
-  int                   m_numItems;
-  int                   m_barWidth;
-  float                 m_btnMaxX;
-  float                 m_btnMinX;
-  float                 m_btnMaxY;
-  float                 m_btnMinY;
+  std::vector<MenuButton> m_buttons;
+
+  float                   m_btnMaxX;
+  float                   m_btnMinX;
+  float                   m_btnMaxY;
+  float                   m_btnMinY;
+  int                     m_numItems;
+  int                     m_barWidth;
 };
 
 #endif // !H_MENUBAR_H
