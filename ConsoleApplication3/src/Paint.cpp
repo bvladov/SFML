@@ -14,10 +14,14 @@ Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, s
   , m_title(windowTitle)
   , m_mouseLeftButtonState(ButtonState::RELEASED)
 {
-  //m_window.setFramerateLimit(144);
+  m_image.create(width, height, sf::Color::White);
   m_state      = State::EMPTY_STATE;
   m_drawColour = sf::Color::Black;
-  m_scene.reserve(height * width);
+  m_sprite.setOrigin({ (float)m_menuBar.getBarWidth(), 0 });
+  m_sprite.setPosition({ (float)m_menuBar.getBarWidth(), 0 });
+  //m_sprite.setTextureRect({ m_menuBar.getBarWidth(),0, (int)width, (int)height });
+  //m_window.setFramerateLimit(144);
+  m_eraserSize = 20;
 }
 
 Paint::~Paint()
@@ -29,7 +33,7 @@ void Paint::run()
 {
   while (m_window.isOpen())
   {
-    m_window.clear(sf::Color::White);
+    m_window.clear();
 
     sf::Event event;
     while (m_window.pollEvent(event))
@@ -55,7 +59,6 @@ void Paint::run()
       }
     }
 
-    cout << (int)m_state << '\n';
     switch (m_state)
     {
     case State::MOUSE_CURSOR:
@@ -86,24 +89,15 @@ void Paint::setMenuBar(MenuBar& menuBar)
 
 void Paint::putPixel(sf::Vector2i pos, sf::Color color)
 {
-  sf::RectangleShape pixel;
-  pixel.setPosition(sf::Vector2f(pos));
-  pixel.setFillColor(color);
-  if (m_scene.empty() || m_connectPixels == false)
+  if (m_connectPixels == false)
   {
-    pixel.setSize({ 2,2 });
+    m_image.setPixel(pos.x, pos.y, color);
   }
   else
   {
-    pixel.setSize({ getDistance(pixel, m_scene.back()), 2 });
-
-    float angle = 180 - atan2(m_scene.back().getPosition().y - pixel.getPosition().y
-                            , pixel.getPosition().x - m_scene.back().getPosition().x) * 180 / 3.1415 ;
-
-    pixel.setRotation(angle);
+    BresenhamLine(pos, m_prevPixel, color);
   }
-
-  m_scene.push_back(pixel);
+  m_prevPixel = pos;
 }
 
 float Paint::getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b)
@@ -114,41 +108,115 @@ float Paint::getDistance(const sf::RectangleShape& a, const sf::RectangleShape& 
 
 void Paint::draw()
 {
-  for (size_t i = 0; i < m_scene.size(); i++)
-  {
-    m_window.draw(m_scene[i]);
-  }
+  m_texture.loadFromImage(m_image);
+  m_sprite.setTexture(m_texture);
+  m_window.draw(m_sprite);
 }
 
 void Paint::drawLogic()
 {
-  if (m_mouseLeftButtonState == ButtonState::RELEASED || sf::Mouse::getPosition(m_window).x < m_menuBar.getBarWidth())
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+
+  if (m_mouseLeftButtonState == ButtonState::RELEASED 
+   || mouseCoords.x < m_menuBar.getBarWidth()
+   || mouseCoords.x >= m_window.getSize().x
+   || mouseCoords.y >= m_window.getSize().y)
   {
     m_connectPixels = false;
   }
 
-  if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth()
-   && sf::Mouse::isButtonPressed(sf::Mouse::Left)
-   && sf::Mouse::getPosition(m_window).x != (m_scene.empty() ? -1 : m_scene.back().getPosition().x)
-   && sf::Mouse::getPosition(m_window).y != (m_scene.empty() ? -1 : m_scene.back().getPosition().y))
+   if(sf::Mouse::isButtonPressed(sf::Mouse::Left)
+   && mouseCoords.x < m_window.getSize().x
+   && mouseCoords.y < m_window.getSize().y
+   && mouseCoords.x > m_menuBar.getBarWidth()
+   && mouseCoords.x != m_prevPixel.x
+   && mouseCoords.y != m_prevPixel.y)
   {
-    putPixel(sf::Mouse::getPosition(m_window), m_drawColour);
+    putPixel(mouseCoords, m_drawColour);
     m_connectPixels = true;
   }
 }
 
 void Paint::eraseLogic()
 {
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
+      && mouseCoords.x < (m_window.getSize().x - m_eraserSize) && mouseCoords.x > m_eraserSize
+      && mouseCoords.y < (m_window.getSize().y - m_eraserSize) && mouseCoords.y > m_eraserSize
+      && mouseCoords.x >= (m_menuBar.getBarWidth() + m_eraserSize))
+      //&& mouseCoords.x != m_prevPixel.x
+      //&& mouseCoords.y != m_prevPixel.y)
   {
-    for (auto& pixel : m_scene)
+    for (int i = -m_eraserSize; i <= m_eraserSize; i++)
     {
-      if (pixel.getPosition().x == sf::Mouse::getPosition(m_window).x
-        && pixel.getPosition().y == sf::Mouse::getPosition(m_window).y)
+      for (int j = -m_eraserSize; j <= m_eraserSize; j++)
       {
-        cout << "erased" << endl;
-        pixel.setFillColor(sf::Color::White);
+        if (m_image.getPixel(mouseCoords.x + i, mouseCoords.y + j) == m_drawColour)
+        {
+          m_image.setPixel(mouseCoords.x + i, mouseCoords.y + j, sf::Color::White);
+        }
       }
+    }
+  }
+}
+
+void Paint::BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color color)
+{
+  int x1 = a.x;
+  int x2 = b.x;
+  int y1 = a.y;
+  int y2 = b.y;
+  int dx = fabs(x1 - x2);
+  int dy = fabs(y1 - y2);
+
+  bool reverse = dx < dy;
+
+  int d;
+  if (reverse)
+  {
+    d  = x1;
+    x1 = y1;
+    y1 = d;
+    
+    d  = x2;
+    x2 = y2;
+    y2 = d;
+
+    d  = dx;
+    dx = dy;
+    dy = d;
+  }
+
+  int incUp = -2 * dx + 2 * dy;
+  int incDN = 2 * dy;
+
+  int incx = x1 <= x2 ? 1 : -1;
+  int incy = y1 <= y2 ? 1 : -1;
+  d = -dx + 2 * dy;
+  int x = x1;
+  int y = y1;
+  int n = dx + 1;
+  while (n--)
+  {
+    if (reverse)
+    {
+      m_image.setPixel(y, x, color);
+    }
+    else
+    {
+      m_image.setPixel(x, y, color);
+    }
+
+    x = x + incx;
+    if (d > 0)
+    {
+      d = d + incUp;
+      y = y + incy;
+    }
+    else
+    {
+      d = d + incDN;
     }
   }
 }

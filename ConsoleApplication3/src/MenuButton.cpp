@@ -2,7 +2,7 @@
 #include <assert.h>
 
 MenuButton::MenuButton(sf::Vector2f size, sf::Vector2f position, State state, std::string iconPath, std::string title)
-  : MenuObject(size, position, state, title), m_icon(new sf::Texture)
+  : MenuObject(size, position, state, title), m_icon(std::make_shared<sf::Texture>())
 {
   m_icon->setSmooth(true);
   m_icon->loadFromFile(iconPath);

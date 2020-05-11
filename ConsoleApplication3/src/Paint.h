@@ -25,14 +25,19 @@ class Paint {
     void eraseLogic();
     void draw();
     float getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b);
+    void BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color);
 
-    std::vector<sf::RectangleShape> m_scene;
+    sf::Image                       m_image;
+    sf::Texture                     m_texture;
+    sf::Sprite                      m_sprite;
     std::string                     m_title;
     MenuBar                         m_menuBar;
     State                           m_state;
     sf::Color                       m_drawColour;
     bool                            m_connectPixels;
     bool                            m_mouseLeftButtonState;
+    sf::Vector2i                    m_prevPixel;
+    int                             m_eraserSize;
 };
 
 #endif // !H_PAINT_H

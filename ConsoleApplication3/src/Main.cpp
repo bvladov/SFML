@@ -9,7 +9,7 @@ using namespace std;
 int main()
 {
   sf::ContextSettings settings;
-  settings.antialiasingLevel = 4;
+  settings.antialiasingLevel = 8;
 
   Paint paint(WIDTH, HEIGHT, "Paint", settings);
   
