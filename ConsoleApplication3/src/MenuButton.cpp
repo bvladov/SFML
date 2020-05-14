@@ -1,4 +1,5 @@
 #include "MenuButton.h"
+#include "Algorithms.h"
 #include <assert.h>
 
 MenuButton::MenuButton(sf::Vector2f size, sf::Vector2f position, State state, std::string iconPath, std::string title)
@@ -7,6 +8,8 @@ MenuButton::MenuButton(sf::Vector2f size, sf::Vector2f position, State state, st
   m_icon->setSmooth(true);
   m_icon->loadFromFile(iconPath);
   m_menuObject.setTexture(m_icon.get());
+  m_menuObject.setOrigin(getRectangleCenter(m_menuObject));
+  m_menuObject.setPosition(m_menuObject.getOrigin().x  + position.x, m_menuObject.getOrigin().y + position.y);
   setIcon(iconPath);
 }
 

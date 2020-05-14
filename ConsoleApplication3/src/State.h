@@ -6,7 +6,8 @@ enum class State {
   MOUSE_CURSOR = 1,
   PENCIL       = 2,
   LINE         = 3,
-  ERASE        = 4
+  ERASE        = 4,
+  FILL         = 5
 };
 
 #endif // !H_STATE_H

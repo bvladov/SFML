@@ -4,6 +4,7 @@ MenuObject::MenuObject(sf::Vector2f size, sf::Vector2f position, State state, st
   : m_title(title), m_isClicked(false), m_isHovered(false), m_scale(1)
 {
   m_menuObject.setSize(size);
+  m_menuObject.setOrigin(position);
   m_menuObject.setPosition(position);
   m_state = state;
 }
@@ -89,7 +90,8 @@ void MenuObject::resetLogic()
 
 sf::Vector2f MenuObject::getPosition() const
 {
-  return m_menuObject.getPosition();
+  return { m_menuObject.getPosition().x - m_menuObject.getOrigin().x
+         , m_menuObject.getPosition().y - m_menuObject.getOrigin().y };
 }
 
 sf::Vector2f MenuObject::getSize() const

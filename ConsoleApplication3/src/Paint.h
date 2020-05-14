@@ -6,8 +6,8 @@
 #include "State.h"
 
 enum ButtonState {
-  PRESSED  = 0,
-  RELEASED = 1
+  RELEASED = 0,
+  PRESSED  = 1,
 };
 
 class Paint {
@@ -23,9 +23,8 @@ class Paint {
     void putPixel(sf::Vector2i pos, sf::Color color);
     void drawLogic();
     void eraseLogic();
+    void fillLogic();
     void draw();
-    float getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b);
-    void BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color);
 
     sf::Image                       m_image;
     sf::Texture                     m_texture;

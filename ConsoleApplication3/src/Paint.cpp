@@ -1,6 +1,6 @@
 #include <assert.h>
 #include "Paint.h"
-#include "State.h"
+#include "Algorithms.h"
 
 #define DELTA 60
 
@@ -73,6 +73,9 @@ void Paint::run()
     case State::ERASE:
       eraseLogic();
       break;
+    case State::FILL:
+      fillLogic();
+      break;
     }
     draw();
 
@@ -95,16 +98,12 @@ void Paint::putPixel(sf::Vector2i pos, sf::Color color)
   }
   else
   {
-    BresenhamLine(pos, m_prevPixel, color);
+    BresenhamLine(pos, m_prevPixel, color, m_image);
   }
   m_prevPixel = pos;
 }
 
-float Paint::getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b)
-{
-  return sqrt( (b.getPosition().x - a.getPosition().x) * (b.getPosition().x - a.getPosition().x)
-             + (b.getPosition().y - a.getPosition().y) * (b.getPosition().y - a.getPosition().y));
-}
+
 
 void Paint::draw()
 {
@@ -129,8 +128,8 @@ void Paint::drawLogic()
    && mouseCoords.x < m_window.getSize().x
    && mouseCoords.y < m_window.getSize().y
    && mouseCoords.x > m_menuBar.getBarWidth()
-   && mouseCoords.x != m_prevPixel.x
-   && mouseCoords.y != m_prevPixel.y)
+   && (mouseCoords.x != m_prevPixel.x
+   || mouseCoords.y != m_prevPixel.y))
   {
     putPixel(mouseCoords, m_drawColour);
     m_connectPixels = true;
@@ -161,62 +160,17 @@ void Paint::eraseLogic()
   }
 }
 
-void Paint::BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color color)
+void Paint::fillLogic()
 {
-  int x1 = a.x;
-  int x2 = b.x;
-  int y1 = a.y;
-  int y2 = b.y;
-  int dx = fabs(x1 - x2);
-  int dy = fabs(y1 - y2);
-
-  bool reverse = dx < dy;
-
-  int d;
-  if (reverse)
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
   {
-    d  = x1;
-    x1 = y1;
-    y1 = d;
-    
-    d  = x2;
-    x2 = y2;
-    y2 = d;
-
-    d  = dx;
-    dx = dy;
-    dy = d;
-  }
-
-  int incUp = -2 * dx + 2 * dy;
-  int incDN = 2 * dy;
-
-  int incx = x1 <= x2 ? 1 : -1;
-  int incy = y1 <= y2 ? 1 : -1;
-  d = -dx + 2 * dy;
-  int x = x1;
-  int y = y1;
-  int n = dx + 1;
-  while (n--)
-  {
-    if (reverse)
-    {
-      m_image.setPixel(y, x, color);
-    }
-    else
-    {
-      m_image.setPixel(x, y, color);
-    }
-
-    x = x + incx;
-    if (d > 0)
-    {
-      d = d + incUp;
-      y = y + incy;
-    }
-    else
-    {
-      d = d + incDN;
-    }
+    cout << m_window.getPosition().x + m_menuBar.getBarWidth() << endl;
+    cout << mouseCoords.x << endl;
+    floodFill(mouseCoords
+      , m_drawColour
+      , m_image
+      , sf::Vector2u(m_menuBar.getBarWidth(), 0)
+      , { m_window.getSize().x, m_window.getSize().y });
   }
 }
