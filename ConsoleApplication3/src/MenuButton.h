@@ -15,7 +15,6 @@ public:
     virtual ~MenuButton();
 
     void setIcon(std::string filename);
-    void clearIcon();
     virtual State interact(sf::RenderWindow& window, State oldState);
     virtual void draw(sf::RenderWindow& window);
 

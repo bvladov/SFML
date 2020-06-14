@@ -20,12 +20,12 @@ private:
 
   std::vector<MenuButton> m_buttons;
 
-  float                   m_btnMaxX;
-  float                   m_btnMinX;
-  float                   m_btnMaxY;
-  float                   m_btnMinY;
-  int                     m_numItems;
-  int                     m_barWidth;
+  float m_btnMaxX;
+  float m_btnMinX;
+  float m_btnMaxY;
+  float m_btnMinY;
+  int   m_numItems;
+  int   m_barWidth;
 };
 
 #endif // !H_MENUBAR_H

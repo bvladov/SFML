@@ -67,10 +67,11 @@ void BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color color, sf::Image& i
   }
 }
 
+//Distance between 2 points represented as rectangles
 float getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b)
 {
   return sqrt(squared(b.getPosition().x - a.getPosition().x)
-    + squared(b.getPosition().y - a.getPosition().y));
+            + squared(b.getPosition().y - a.getPosition().y));
 }
 
 void floodFill(const sf::Vector2i pos, sf::Color color, sf::Image& image, sf::Vector2u lowBounds, sf::Vector2u highBounds)
@@ -94,6 +95,5 @@ void floodFill(const sf::Vector2i pos, sf::Color color, sf::Image& image, sf::Ve
       q.push({ top.x, top.y - 1 });
       q.push({ top.x, top.y + 1 });
     }
-
   }
 }

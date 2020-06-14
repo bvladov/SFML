@@ -64,7 +64,6 @@ void Paint::run()
     case State::MOUSE_CURSOR:
       break;
     case State::PENCIL:
-
       drawLogic();
       break;
     case State::LINE:

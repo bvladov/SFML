@@ -4,6 +4,7 @@
 #include "SFML/Graphics.hpp"
 #include "State.h"
 
+//Class that represents a square menu object
 class MenuObject
 {
 public:
@@ -22,9 +23,9 @@ public:
   sf::Vector2f getSize()     const;
   State        getState()    const;
 
-  std::string m_title;
-  bool        m_isClicked;
-  bool        m_isHovered;
+  std::string  m_title;
+  bool         m_isClicked;
+  bool         m_isHovered;
 
 private:
   void copyFrom(const MenuObject& other);

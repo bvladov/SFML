@@ -10,6 +10,7 @@ enum ButtonState {
   PRESSED  = 1,
 };
 
+//Main entry point class for the application
 class Paint {
   public:
     Paint(unsigned int width, unsigned int height, std::string windowTitle, sf::ContextSettings settings = sf::ContextSettings());
@@ -26,17 +27,17 @@ class Paint {
     void fillLogic();
     void draw();
 
-    sf::Image                       m_image;
-    sf::Texture                     m_texture;
-    sf::Sprite                      m_sprite;
-    std::string                     m_title;
-    MenuBar                         m_menuBar;
-    State                           m_state;
-    sf::Color                       m_drawColour;
-    bool                            m_connectPixels;
-    bool                            m_mouseLeftButtonState;
-    sf::Vector2i                    m_prevPixel;
-    int                             m_eraserSize;
+    sf::Image    m_image;
+    sf::Texture  m_texture;
+    sf::Sprite   m_sprite;
+    std::string  m_title;
+    MenuBar      m_menuBar;
+    State        m_state;
+    sf::Color    m_drawColour;
+    bool         m_connectPixels;
+    bool         m_mouseLeftButtonState;
+    sf::Vector2i m_prevPixel;
+    int          m_eraserSize;
 };
 
 #endif // !H_PAINT_H

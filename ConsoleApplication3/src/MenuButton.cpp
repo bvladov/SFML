@@ -20,7 +20,7 @@ MenuButton::MenuButton(const MenuButton& other) : MenuObject(other)
 
 MenuButton::~MenuButton()
 {
-  clearIcon();
+
 }
 
 void MenuButton::setIcon(std::string filename)
@@ -28,15 +28,11 @@ void MenuButton::setIcon(std::string filename)
   m_icon->loadFromFile(filename);
 }
 
-void MenuButton::clearIcon()
-{
-
-}
-
-
 State MenuButton::interact(sf::RenderWindow& window, State oldState)
 {
   sf::Vector2i mouseCoords = sf::Mouse::getPosition(window);
+
+  //if mouse is over the button
   if (mouseCoords.x >= getPosition().x &&
       mouseCoords.x <= getPosition().x + getSize().x &&
       mouseCoords.y >= getPosition().y &&

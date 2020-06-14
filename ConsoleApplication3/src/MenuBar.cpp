@@ -53,7 +53,6 @@ State MenuBar::interact(sf::RenderWindow& window, State oldState)
   for (size_t i = 0; i < m_buttons.size(); i++)
   {
     newState = m_buttons[i].interact(window, oldState);
-    //std::cout << (int)newState << std::endl;
     if (newState != State::EMPTY_STATE)
     {
       return newState;
