@@ -26,18 +26,23 @@ class Paint {
     void eraseLogic();
     void fillLogic();
     void draw();
+    void setMouseCursor();
+    void resetMouseCursor();
+    void updateCursorPos(int x, int y);
 
-    sf::Image    m_image;
-    sf::Texture  m_texture;
-    sf::Sprite   m_sprite;
-    std::string  m_title;
-    MenuBar      m_menuBar;
-    State        m_state;
-    sf::Color    m_drawColour;
-    bool         m_connectPixels;
-    bool         m_mouseLeftButtonState;
-    sf::Vector2i m_prevPixel;
-    int          m_eraserSize;
+    sf::Image          m_image;
+    sf::Texture        m_texture;
+    sf::Sprite         m_sprite;
+    std::string        m_title;
+    MenuBar            m_menuBar;
+    State              m_state;
+    State              m_newState;
+    sf::Color          m_drawColour;
+    bool               m_connectPixels;
+    bool               m_mouseLeftButtonState;
+    sf::Vector2i       m_prevPixel;
+    int                m_eraserSize;
+    sf::RectangleShape m_mouse;
 };
 
 #endif // !H_PAINT_H

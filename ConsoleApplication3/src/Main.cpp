@@ -2,7 +2,7 @@
 #include <winsqlite/winsqlite3.h>
 #include <string>
 #include "Paint.h"
-using namespace std;
+
 #define WIDTH  1000
 #define HEIGHT 1000
 

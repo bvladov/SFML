@@ -33,7 +33,7 @@ void MenuBar::defaultButtonsSetup()
   addItem("Pencil", "./texture/pencil1.png", State::PENCIL);
   addItem("Line"  , "./texture/line.png"   , State::LINE);
   addItem("Erase" , "./texture/eraser.png" , State::ERASE);
-  addItem("Fill" , "./texture/fill.png"    , State::FILL);
+  addItem("Fill" ,  "./texture/fill.png"   , State::FILL);
 }
 
 void MenuBar::draw(sf::RenderWindow& window)
