@@ -22,7 +22,8 @@ class Paint {
   private:
     sf::RenderWindow m_window;
     void putPixel(sf::Vector2i pos, sf::Color color);
-    void drawLogic();
+    void pencilLogic();
+    void lineLogic();
     void eraseLogic();
     void fillLogic();
     void draw();
@@ -31,6 +32,7 @@ class Paint {
     void updateCursorPos(int x, int y);
 
     sf::Image          m_image;
+    sf::Image          m_imageSnapshot;
     sf::Texture        m_texture;
     sf::Sprite         m_sprite;
     std::string        m_title;
@@ -43,6 +45,9 @@ class Paint {
     sf::Vector2i       m_prevPixel;
     int                m_eraserSize;
     sf::RectangleShape m_mouse;
+    bool               m_isDrawing;
+    sf::Vector2i       m_lineStartCoords;
+    sf::Vector2i       m_prevLine;
 };
 
 #endif // !H_PAINT_H

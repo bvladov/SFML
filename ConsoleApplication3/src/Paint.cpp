@@ -13,6 +13,7 @@ Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, s
   , m_menuBar(m_window)
   , m_title(windowTitle)
   , m_mouseLeftButtonState(ButtonState::RELEASED)
+  , m_isDrawing(false)
 {
   m_image.create(width, height, sf::Color::White);
   m_state      = State::EMPTY_STATE;
@@ -52,12 +53,22 @@ void Paint::run()
           if (event.mouseButton.button == sf::Mouse::Left)
           {
             m_mouseLeftButtonState = ButtonState::PRESSED;
+            if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth())
+            {
+              m_isDrawing = true;
+              m_imageSnapshot = m_image;
+              m_lineStartCoords = m_prevLine = sf::Mouse::getPosition(m_window);
+            }
           }
           break;
         case sf::Event::MouseButtonReleased:
           if (event.mouseButton.button == sf::Mouse::Left)
           {
             m_mouseLeftButtonState = ButtonState::RELEASED;
+            if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth())
+            {
+              m_isDrawing = false;
+            }
           }
           break;
         case sf::Event::MouseMoved:
@@ -69,10 +80,10 @@ void Paint::run()
     switch (m_state)
     {
     case State::PENCIL:
-      drawLogic();
+      pencilLogic();
       break;
     case State::LINE:
-      //m_connectPixels = true;
+      lineLogic();
       break;
     case State::ERASE:
       eraseLogic();
@@ -92,7 +103,6 @@ void Paint::run()
 
     m_state = m_newState;
 
-    m_menuBar.draw(m_window);
     m_window.display();
   }
 }
@@ -149,8 +159,8 @@ void Paint::setMouseCursor()
     m_mouse.setTexture(icon);
     break;
   }
-  case State::LINE:
-    break;
+  //case State::LINE:
+  //  break;
   case State::ERASE:
   {
     m_mouse.setSize(sf::Vector2f(m_eraserSize * 2, m_eraserSize * 2));
@@ -187,10 +197,11 @@ void Paint::draw()
   m_texture.loadFromImage(m_image);
   m_sprite.setTexture(m_texture);
   m_window.draw(m_sprite);
+  m_menuBar.draw(m_window);
   m_window.draw(m_mouse);
 }
 
-void Paint::drawLogic()
+void Paint::pencilLogic()
 {
   sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
 
@@ -203,14 +214,30 @@ void Paint::drawLogic()
   }
 
    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)
-   && mouseCoords.x < m_window.getSize().x
-   && mouseCoords.y < m_window.getSize().y
-   && mouseCoords.x > m_menuBar.getBarWidth()
+   &&  mouseCoords.x  < m_window.getSize().x
+   &&  mouseCoords.y  < m_window.getSize().y
+   &&  mouseCoords.x  > m_menuBar.getBarWidth()
    && (mouseCoords.x != m_prevPixel.x
-   || mouseCoords.y != m_prevPixel.y))
+   ||  mouseCoords.y != m_prevPixel.y))
   {
     putPixel(mouseCoords, m_drawColour);
     m_connectPixels = true;
+  }
+}
+
+void Paint::lineLogic()
+{
+  if (m_isDrawing)
+  {
+    m_image = m_imageSnapshot;
+    sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+    if (mouseCoords.x < m_window.getSize().x
+    && mouseCoords.y  < m_window.getSize().y
+    && mouseCoords.x  > m_menuBar.getBarWidth())
+    {
+      BresenhamLine(m_lineStartCoords, mouseCoords, m_drawColour, m_image);
+    }
+    m_prevLine = mouseCoords;
   }
 }
 
