@@ -14,6 +14,7 @@ Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, s
   , m_title(windowTitle)
   , m_mouseLeftButtonState(ButtonState::RELEASED)
   , m_isDrawing(false)
+  , m_isColorPicking(false)
 {
   m_image.create(width, height, sf::Color::White);
   m_state      = State::EMPTY_STATE;
@@ -24,6 +25,10 @@ Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, s
   m_mouse.setSize(sf::Vector2f(0, 0)); 
   m_eraserSize = 20;
   m_window.setMouseCursorVisible(false);
+  m_pickerImage.loadFromFile("./texture/color_pick.png");
+  m_pickerTexture.loadFromImage(m_pickerImage);
+  m_colorPicker.setTexture(&m_pickerTexture);
+  m_colorPicker.setSize({ 0,0 });
   //m_window.setFramerateLimit(144);
 }
 
@@ -59,6 +64,16 @@ void Paint::run()
               m_imageSnapshot = m_image;
               m_lineStartCoords = m_prevLine = sf::Mouse::getPosition(m_window);
             }
+            if (m_isColorPicking)
+            {
+              m_isColorPicking = false;
+              m_isColorPicked  = true;
+            }
+            else
+            {
+              m_isColorPicking = true;
+              m_isColorPicked  = false;
+            }
           }
           break;
         case sf::Event::MouseButtonReleased:
@@ -90,6 +105,9 @@ void Paint::run()
       break;
     case State::FILL:
       fillLogic();
+      break;
+    case State::COLOR_PICKER:
+      colorPickLogic();
       break;
     default://State::MOUSE_CURSOR
       break;
@@ -198,6 +216,7 @@ void Paint::draw()
   m_sprite.setTexture(m_texture);
   m_window.draw(m_sprite);
   m_menuBar.draw(m_window);
+  m_window.draw(m_colorPicker);
   m_window.draw(m_mouse);
 }
 
@@ -276,4 +295,28 @@ void Paint::fillLogic()
       , sf::Vector2u(m_menuBar.getBarWidth(), 0)
       , { m_window.getSize().x, m_window.getSize().y });
   }
+}
+
+void Paint::colorPickLogic()
+{
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  if (!m_isColorPicking)
+  {
+    m_colorPicker.setPosition(sf::Vector2f(mouseCoords));
+
+  }
+  else
+  {
+    if (mouseCoords.x >= m_colorPicker.getPosition().x
+     && mouseCoords.y >= m_colorPicker.getPosition().y
+     && mouseCoords.x <= m_colorPicker.getPosition().x + m_colorPicker.getSize().x
+     && mouseCoords.y <= m_colorPicker.getPosition().x + m_colorPicker.getSize().y
+     && m_isColorPicked)
+    {
+      m_colorPicker.setSize({ 0,0 });
+      printf("(r,g,b) = (%d,%d,%d)\n", m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a, m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).b,
+        m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a);
+    }
+  }
+
 }

@@ -24,16 +24,18 @@ MenuBar::~MenuBar()
 
 }
 
+
 void MenuBar::defaultButtonsSetup()
 {
   int x = m_menuObject.getSize().x;
   int y = m_menuObject.getSize().y;
 
-  addItem("Cursor", "./texture/arrow.png"  , State::MOUSE_CURSOR);
-  addItem("Pencil", "./texture/pencil1.png", State::PENCIL);
-  addItem("Line"  , "./texture/line.png"   , State::LINE);
-  addItem("Erase" , "./texture/eraser.png" , State::ERASE);
-  addItem("Fill" ,  "./texture/fill.png"   , State::FILL);
+  addItem("Cursor"      , State::MOUSE_CURSOR, "./texture/arrow.png");
+  addItem("Pencil"      , State::PENCIL      , "./texture/pencil1.png");
+  addItem("Line"        , State::LINE        , "./texture/line.png");
+  addItem("Erase"       , State::ERASE       , "./texture/eraser.png");
+  addItem("Fill"        , State::FILL        , "./texture/fill.png");
+  addItem("ColorPicker" , State::COLOR_PICKER, "./texture/color_pick.png");
 }
 
 void MenuBar::draw(sf::RenderWindow& window)
@@ -61,7 +63,7 @@ State MenuBar::interact(sf::RenderWindow& window, State oldState)
   return oldState;
 }
 
-void MenuBar::addItem(std::string title, std::string iconPath, State state)
+void MenuBar::addItem(std::string title, State state, std::string iconPath)
 {
   float x = m_menuObject.getSize().x;
   float y = m_menuObject.getSize().y;

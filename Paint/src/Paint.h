@@ -26,6 +26,7 @@ class Paint {
     void lineLogic();
     void eraseLogic();
     void fillLogic();
+    void colorPickLogic();
     void draw();
     void setMouseCursor();
     void resetMouseCursor();
@@ -48,6 +49,11 @@ class Paint {
     bool               m_isDrawing;
     sf::Vector2i       m_lineStartCoords;
     sf::Vector2i       m_prevLine;
+    sf::RectangleShape m_colorPicker;
+    sf::Image          m_pickerImage;
+    sf::Texture        m_pickerTexture;
+    bool               m_isColorPicking;
+    bool               m_isColorPicked;
 };
 
 #endif // !H_PAINT_H

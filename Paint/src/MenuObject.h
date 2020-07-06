@@ -34,8 +34,8 @@ private:
   bool isClicked() const;
   bool isHovered() const;
 
-  float              m_scale;
-  State              m_state;
+  float m_scale;
+  State m_state;
 
 protected:
   sf::RectangleShape m_menuObject;

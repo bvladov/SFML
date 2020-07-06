@@ -11,7 +11,7 @@ public:
   virtual ~MenuBar();
 
   void draw(sf::RenderWindow& window);
-  void addItem(std::string title, std::string iconPath, State state);
+  void addItem(std::string title, State state, std::string iconPath = "");
   State interact(sf::RenderWindow& window, State oldState);
   const int getBarWidth() const;
 
