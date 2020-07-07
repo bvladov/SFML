@@ -1,7 +1,7 @@
 #include "MenuBar.h"
 
-MenuBar::MenuBar(sf::RenderWindow& window) : m_numItems(0),
-  MenuObject({ (float)window.getSize().x / 15, (float)window.getSize().y }
+MenuBar::MenuBar(sf::Vector2f windowSize) : m_numItems(0),
+  MenuObject({ windowSize.x / 15, windowSize.y }
            , { 0,0 }
            , State::EMPTY_STATE)
 {
@@ -11,7 +11,7 @@ MenuBar::MenuBar(sf::RenderWindow& window) : m_numItems(0),
 
   m_btnMaxX = (m_menuObject.getSize().x - m_menuObject.getOutlineThickness()) * 0.95f;
   m_btnMinX = (m_menuObject.getSize().x - m_menuObject.getOutlineThickness()) * 0.05f;
-  m_btnMaxY = m_menuObject.getSize().y * 0.98f;
+  m_btnMaxY =  m_menuObject.getSize().y * 0.98f;
   m_btnMinY =  m_menuObject.getSize().y * 0.02f;
 
   m_barWidth = m_menuObject.getSize().x + m_menuObject.getOutlineThickness();

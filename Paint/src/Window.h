@@ -3,24 +3,34 @@
 
 #include <SFML/Graphics.hpp>
 #include <string>
+#include "PaintData.h"
 
 class Window
 {
 public:
-  Window(const std::string title, int width, int height);
+  Window(unsigned int width, unsigned int height, const std::string title, struct PaintData* paintData);
   ~Window();
 
+  bool isOpen();
   void update();
+  void display();
   void draw(sf::Drawable& drawable);
+  sf::RenderWindow& getWindow();
+  sf::Vector2u getSize();
+  sf::Vector2i getPosition();
+  sf::Vector2i getMouseCoords();
 
 private:
   void createWindow();
   void closeWindow();
+  void updateCursorPos(int x, int y);
 
-  sf::RenderWindow m_window;
-  std::string      m_title;
-  int m_width;
-  int m_height;
+  sf::RenderWindow  m_window;
+  struct PaintData* m_paintData;
+  std::string       m_title;
+  unsigned int  m_width;
+  unsigned int  m_height;
+  bool m_isOpen;
 };
 
 #endif // !H_WINDOW_H

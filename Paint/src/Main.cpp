@@ -8,10 +8,7 @@
 
 int main()
 {
-  sf::ContextSettings settings;
-  settings.antialiasingLevel = 8;
-
-  Paint paint(WIDTH, HEIGHT, "Paint", settings);
+  Paint paint(WIDTH, HEIGHT, "Paint");
   
   paint.run();
 

@@ -7,7 +7,7 @@
 class MenuBar : public MenuObject
 {
 public:
-  MenuBar(sf::RenderWindow& window);
+  MenuBar(sf::Vector2f windowSize);
   virtual ~MenuBar();
 
   void draw(sf::RenderWindow& window);

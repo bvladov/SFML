@@ -7,34 +7,36 @@
 using std::cout;
 using std::endl;
 
-Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle, sf::ContextSettings settings)
-  : m_window(sf::VideoMode(width,height), windowTitle, sf::Style::Default, settings)
-  , m_connectPixels(false)
-  , m_menuBar(m_window)
-  , m_title(windowTitle)
-  , m_mouseLeftButtonState(ButtonState::RELEASED)
-  , m_isDrawing(false)
-  , m_isColorPicking(false)
+Paint::Paint(unsigned int width, unsigned int height, std::string windowTitle)
+  : m_data(width, height)
+  , m_window(width, height, windowTitle, &m_data)
 {
-  m_image.create(width, height, sf::Color::White);
-  m_state      = State::EMPTY_STATE;
-  m_newState   = State::MOUSE_CURSOR;
-  m_drawColour = sf::Color::Black;
-  m_sprite.setOrigin({ (float)m_menuBar.getBarWidth(), 0 });
-  m_sprite.setPosition({ (float)m_menuBar.getBarWidth(), 0 });
-  m_mouse.setSize(sf::Vector2f(0, 0)); 
-  m_eraserSize = 20;
-  m_window.setMouseCursorVisible(false);
-  m_pickerImage.loadFromFile("./texture/color_pick.png");
-  m_pickerTexture.loadFromImage(m_pickerImage);
-  m_colorPicker.setTexture(&m_pickerTexture);
-  m_colorPicker.setSize({ 0,0 });
-  //m_window.setFramerateLimit(144);
+  m_data.image.create(width, height, sf::Color::White);
+  initData();
+}
+
+void Paint::initData()
+{
+  m_data.connectPixels = false;
+  m_data.mouseLeftButtonState = ButtonState::RELEASED;
+  m_data.isDrawing = false;
+  m_data.isColorPicking = false;
+  m_data.state = State::EMPTY_STATE;
+  m_data.newState = State::MOUSE_CURSOR;
+  m_data.drawColour = sf::Color::Black;
+  m_data.sprite.setOrigin({ (float)m_data.menuBar.getBarWidth(), 0 });
+  m_data.sprite.setPosition({ (float)m_data.menuBar.getBarWidth(), 0 });
+  m_data.mouse.setSize(sf::Vector2f(0, 0));
+  m_data.eraserSize = 20;
+  m_data.pickerImage.loadFromFile("./texture/color_pick.png");
+  m_data.pickerTexture.loadFromImage(m_data.pickerImage);
+  m_data.colorPicker.setTexture(&m_data.pickerTexture);
+  m_data.colorPicker.setSize({ 0,0 });
 }
 
 Paint::~Paint()
 {
-  m_window.close();
+
 }
 
 void Paint::run()
@@ -43,56 +45,9 @@ void Paint::run()
 
   while (m_window.isOpen())
   {
-    m_window.clear();
+    m_window.update();
 
-    sf::Event event;
-    while (m_window.pollEvent(event))
-    {
-      switch (event.type)
-      {
-        case sf::Event::Closed:
-          m_window.close();
-          cout << "Closing\n";
-          break;
-        case sf::Event::MouseButtonPressed:
-          if (event.mouseButton.button == sf::Mouse::Left)
-          {
-            m_mouseLeftButtonState = ButtonState::PRESSED;
-            if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth())
-            {
-              m_isDrawing = true;
-              m_imageSnapshot = m_image;
-              m_lineStartCoords = m_prevLine = sf::Mouse::getPosition(m_window);
-            }
-            if (m_isColorPicking)
-            {
-              m_isColorPicking = false;
-              m_isColorPicked  = true;
-            }
-            else
-            {
-              m_isColorPicking = true;
-              m_isColorPicked  = false;
-            }
-          }
-          break;
-        case sf::Event::MouseButtonReleased:
-          if (event.mouseButton.button == sf::Mouse::Left)
-          {
-            m_mouseLeftButtonState = ButtonState::RELEASED;
-            if (sf::Mouse::getPosition(m_window).x > m_menuBar.getBarWidth())
-            {
-              m_isDrawing = false;
-            }
-          }
-          break;
-        case sf::Event::MouseMoved:
-          updateCursorPos(event.mouseMove.x, event.mouseMove.y);
-          break;
-      }
-    }
-
-    switch (m_state)
+    switch (m_data.state)
     {
     case State::PENCIL:
       pencilLogic();
@@ -113,13 +68,13 @@ void Paint::run()
       break;
     }
     draw();
-    m_newState = m_menuBar.interact(m_window, m_state);
-    if (m_newState != m_state)
+    m_data.newState = m_data.menuBar.interact(getWindow(), m_data.state);
+    if (m_data.newState != m_data.state)
     {
       setMouseCursor();
     }
 
-    m_state = m_newState;
+    m_data.state = m_data.newState;
 
     m_window.display();
   }
@@ -127,64 +82,49 @@ void Paint::run()
 
 void Paint::putPixel(sf::Vector2i pos, sf::Color color)
 {
-  if (m_connectPixels == false)
+  if (m_data.connectPixels == false)
   {
-    m_image.setPixel(pos.x, pos.y, color);
+    m_data.image.setPixel(pos.x, pos.y, color);
   }
   else
   {
-    BresenhamLine(pos, m_prevPixel, color, m_image);
+    BresenhamLine(pos, m_data.prevPixel, color, m_data.image);
   }
-  m_prevPixel = pos;
+  m_data.prevPixel = pos;
 }
 
 void Paint::resetMouseCursor()
 {
-  m_mouse.setTexture(nullptr);
-  m_mouse.setSize(sf::Vector2f(0, 0));
-  m_mouse.setOutlineThickness(0);
-}
-
-void Paint::updateCursorPos(int x, int y)
-{
-  switch (m_state)
-  {
-  case State::ERASE:
-    m_mouse.setPosition(sf::Vector2f(x - m_eraserSize, y - m_eraserSize));
-    break;
-  case State::PENCIL:
-    m_mouse.setPosition(sf::Vector2f(x, y - 32));
-    break;
-  default:
-    m_mouse.setPosition(sf::Vector2f(x, y));
-  }
+  m_data.mouse.setTexture(nullptr);
+  m_data.mouse.setSize(sf::Vector2f(0, 0));
+  m_data.mouse.setOutlineThickness(0);
 }
 
 void Paint::setMouseCursor()
 {
   resetMouseCursor();
-  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(getWindow());
 
-  switch (m_newState)
+  switch (m_data.newState)
   {
   case State::PENCIL:
   {
     sf::Texture* icon = new sf::Texture;
     icon->loadFromFile(std::string("./texture/cursor_pencil.png"));
     icon->setSmooth(true);
-    m_mouse.setSize(sf::Vector2f(32, 32));
-    cout << m_mouse.getSize().x << ' ' << m_mouse.getSize().y << "\n";
-    m_mouse.setTexture(icon);
+    m_data.mouse.setSize(sf::Vector2f(32, 32));
+    cout << m_data.mouse.getSize().x << ' ' << m_data.mouse.getSize().y << "\n";
+    m_data.mouse.setTexture(icon);
     break;
   }
   //case State::LINE:
   //  break;
   case State::ERASE:
   {
-    m_mouse.setSize(sf::Vector2f(m_eraserSize * 2, m_eraserSize * 2));
-    m_mouse.setOutlineThickness(1);
-    m_mouse.setOutlineColor(m_drawColour);
-    m_mouse.setFillColor(sf::Color::White);
+    m_data.mouse.setSize(sf::Vector2f(m_data.eraserSize * 2, m_data.eraserSize * 2));
+    m_data.mouse.setOutlineThickness(1);
+    m_data.mouse.setOutlineColor(m_data.drawColour);
+    m_data.mouse.setFillColor(sf::Color::White);
     break;
   }
   case State::FILL:
@@ -192,9 +132,9 @@ void Paint::setMouseCursor()
     sf::Texture* icon = new sf::Texture;
     icon->loadFromFile(std::string("./texture/cursor_fill.png"));
     icon->setSmooth(true);
-    m_mouse.setSize(sf::Vector2f(32, 32));
-    cout << m_mouse.getSize().x << ' ' << m_mouse.getSize().y << "\n";
-    m_mouse.setTexture(icon);
+    m_data.mouse.setSize(sf::Vector2f(32, 32));
+    cout << m_data.mouse.getSize().x << ' ' << m_data.mouse.getSize().y << "\n";
+    m_data.mouse.setTexture(icon);
     break;
   }
   default:
@@ -202,9 +142,9 @@ void Paint::setMouseCursor()
     sf::Texture* icon = new sf::Texture;
     icon->loadFromFile(std::string("./texture/cursor_arrow.png"));
     icon->setSmooth(true);
-    m_mouse.setSize(sf::Vector2f(32, 32));
-    cout << m_mouse.getSize().x << ' ' << m_mouse.getSize().y << "\n";
-    m_mouse.setTexture(icon);
+    m_data.mouse.setSize(sf::Vector2f(32, 32));
+    cout << m_data.mouse.getSize().x << ' ' << m_data.mouse.getSize().y << "\n";
+    m_data.mouse.setTexture(icon);
     break;
   }
   }
@@ -212,70 +152,70 @@ void Paint::setMouseCursor()
 
 void Paint::draw()
 {
-  m_texture.loadFromImage(m_image);
-  m_sprite.setTexture(m_texture);
-  m_window.draw(m_sprite);
-  m_menuBar.draw(m_window);
-  m_window.draw(m_colorPicker);
-  m_window.draw(m_mouse);
+  m_data.texture.loadFromImage(m_data.image);
+  m_data.sprite.setTexture(m_data.texture);
+  m_window.draw(m_data.sprite);
+  m_data.menuBar.draw(getWindow());
+  m_window.draw(m_data.colorPicker);
+  m_window.draw(m_data.mouse);
 }
 
 void Paint::pencilLogic()
 {
-  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  sf::Vector2i mouseCoords = sf::Mouse::getPosition(getWindow());
 
-  if (m_mouseLeftButtonState == ButtonState::RELEASED 
-   || mouseCoords.x < m_menuBar.getBarWidth()
+  if (m_data.mouseLeftButtonState == ButtonState::RELEASED
+   || mouseCoords.x < m_data.menuBar.getBarWidth()
    || mouseCoords.x >= m_window.getSize().x
    || mouseCoords.y >= m_window.getSize().y)
   {
-    m_connectPixels = false;
+    m_data.connectPixels = false;
   }
 
    if(sf::Mouse::isButtonPressed(sf::Mouse::Left)
    &&  mouseCoords.x  < m_window.getSize().x
    &&  mouseCoords.y  < m_window.getSize().y
-   &&  mouseCoords.x  > m_menuBar.getBarWidth()
-   && (mouseCoords.x != m_prevPixel.x
-   ||  mouseCoords.y != m_prevPixel.y))
+   &&  mouseCoords.x  > m_data.menuBar.getBarWidth()
+   && (mouseCoords.x != m_data.prevPixel.x
+   ||  mouseCoords.y != m_data.prevPixel.y))
   {
-    putPixel(mouseCoords, m_drawColour);
-    m_connectPixels = true;
+    putPixel(mouseCoords, m_data.drawColour);
+    m_data.connectPixels = true;
   }
 }
 
 void Paint::lineLogic()
 {
-  if (m_isDrawing)
+  if (m_data.isDrawing)
   {
-    m_image = m_imageSnapshot;
-    sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+    m_data.image = m_data.imageSnapshot;
+    sf::Vector2i mouseCoords = sf::Mouse::getPosition(getWindow());
     if (mouseCoords.x < m_window.getSize().x
     && mouseCoords.y  < m_window.getSize().y
-    && mouseCoords.x  > m_menuBar.getBarWidth())
+    && mouseCoords.x  > m_data.menuBar.getBarWidth())
     {
-      BresenhamLine(m_lineStartCoords, mouseCoords, m_drawColour, m_image);
+      BresenhamLine(m_data.lineStartCoords, mouseCoords, m_data.drawColour, m_data.image);
     }
-    m_prevLine = mouseCoords;
+    m_data.prevLine = mouseCoords;
   }
 }
 
 void Paint::eraseLogic()
 {
-  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  sf::Vector2i mouseCoords = m_window.getMouseCoords();
 
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
-      && mouseCoords.x < (m_window.getSize().x - m_eraserSize) && mouseCoords.x > m_eraserSize
-      && mouseCoords.y < (m_window.getSize().y - m_eraserSize) && mouseCoords.y > m_eraserSize
-      && mouseCoords.x >= (m_menuBar.getBarWidth() + m_eraserSize))
+      && mouseCoords.x < (m_window.getSize().x - m_data.eraserSize) && mouseCoords.x > m_data.eraserSize
+      && mouseCoords.y < (m_window.getSize().y - m_data.eraserSize) && mouseCoords.y > m_data.eraserSize
+      && mouseCoords.x >= (m_data.menuBar.getBarWidth() + m_data.eraserSize))
   {
-    for (int i = -m_eraserSize; i <= m_eraserSize; i++)
+    for (int i = -m_data.eraserSize; i <= m_data.eraserSize; i++)
     {
-      for (int j = -m_eraserSize; j <= m_eraserSize; j++)
+      for (int j = -m_data.eraserSize; j <= m_data.eraserSize; j++)
       {
-        if (m_image.getPixel(mouseCoords.x + i, mouseCoords.y + j) == m_drawColour)
+        if (m_data.image.getPixel(mouseCoords.x + i, mouseCoords.y + j) == m_data.drawColour)
         {
-          m_image.setPixel(mouseCoords.x + i, mouseCoords.y + j, sf::Color::White);
+          m_data.image.setPixel(mouseCoords.x + i, mouseCoords.y + j, sf::Color::White);
         }
       }
     }
@@ -284,39 +224,79 @@ void Paint::eraseLogic()
 
 void Paint::fillLogic()
 {
-  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
+  sf::Vector2i mouseCoords = m_window.getMouseCoords();
   if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
   {
-    cout << m_window.getPosition().x + m_menuBar.getBarWidth() << endl;
+    cout << m_window.getPosition().x + m_data.menuBar.getBarWidth() << endl;
     cout << mouseCoords.x << endl;
     floodFill(mouseCoords
-      , m_drawColour
-      , m_image
-      , sf::Vector2u(m_menuBar.getBarWidth(), 0)
+      , m_data.drawColour
+      , m_data.image
+      , sf::Vector2u(m_data.menuBar.getBarWidth(), 0)
       , { m_window.getSize().x, m_window.getSize().y });
   }
 }
 
 void Paint::colorPickLogic()
 {
-  sf::Vector2i mouseCoords = sf::Mouse::getPosition(m_window);
-  if (!m_isColorPicking)
+  sf::Vector2i mouseCoords = m_window.getMouseCoords();
+  if (!m_data.isColorPicking)
   {
-    m_colorPicker.setPosition(sf::Vector2f(mouseCoords));
+    m_data.colorPicker.setPosition(sf::Vector2f(mouseCoords));
 
   }
   else
   {
-    if (mouseCoords.x >= m_colorPicker.getPosition().x
-     && mouseCoords.y >= m_colorPicker.getPosition().y
-     && mouseCoords.x <= m_colorPicker.getPosition().x + m_colorPicker.getSize().x
-     && mouseCoords.y <= m_colorPicker.getPosition().x + m_colorPicker.getSize().y
-     && m_isColorPicked)
+    if (mouseCoords.x >= m_data.colorPicker.getPosition().x
+     && mouseCoords.y >= m_data.colorPicker.getPosition().y
+     && mouseCoords.x <= m_data.colorPicker.getPosition().x + m_data.colorPicker.getSize().x
+     && mouseCoords.y <= m_data.colorPicker.getPosition().x + m_data.colorPicker.getSize().y
+     && m_data.isColorPicked)
     {
-      m_colorPicker.setSize({ 0,0 });
-      printf("(r,g,b) = (%d,%d,%d)\n", m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a, m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).b,
-        m_pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a);
+      m_data.colorPicker.setSize({ 0,0 });
+      printf("(r,g,b) = (%d,%d,%d)\n", m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a, m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).b,
+        m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a);
     }
   }
 
+}
+
+bool Paint::getLMBstate()
+{
+  return m_data.mouseLeftButtonState;
+}
+
+void Paint::setLMBstate(ButtonState newState)
+{
+  m_data.mouseLeftButtonState = newState;
+}
+
+bool Paint::isDrawing()
+{
+  return m_data.isDrawing;
+}
+
+bool Paint::isColorPicked()
+{
+  return m_data.isColorPicked;
+}
+
+bool Paint::isColorPicking()
+{
+  return m_data.isColorPicking;
+}
+
+MenuBar* Paint::getMenuBar()
+{
+  return &m_data.menuBar;
+}
+
+void Paint::setDrawing(bool newState)
+{
+  m_data.isDrawing = newState;
+}
+
+sf::RenderWindow& Paint::getWindow()
+{
+  return m_window.getWindow();
 }
