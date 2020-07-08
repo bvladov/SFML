@@ -14,13 +14,6 @@ class Paint {
     MenuBar*    getMenuBar();
     sf::RenderWindow& getWindow();
 
-    bool getLMBstate();
-    void setLMBstate(ButtonState newState);
-    bool isDrawing();
-    void setDrawing(bool newState);
-    bool isColorPicking();
-    bool isColorPicked();
-
   private:
     //sf::RenderWindow m_window;
     Window m_window;

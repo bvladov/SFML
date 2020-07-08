@@ -50,15 +50,12 @@ void Window::update()
           m_paintData->imageSnapshot   = m_paintData->image;
           m_paintData->lineStartCoords = m_paintData->prevLine = sf::Mouse::getPosition(m_window);
         }
-        if (m_paintData->isColorPicking)
+        if (!m_paintData->isColorPicking && m_paintData->state == State::COLOR_PICKER)
         {
           m_paintData->isColorPicking = false;
-          m_paintData->isColorPicked  = true;
-        }
-        else
-        {
-          m_paintData->isColorPicking = true;
           m_paintData->isColorPicked  = false;
+          m_paintData->colorPicker.setSize({ 512,511 });
+          m_paintData->colorPicker.setPosition(sf::Vector2f(getMouseCoords().x + 0.5, getMouseCoords().y + 0.5));
         }
       }
       break;
@@ -69,7 +66,12 @@ void Window::update()
         if (sf::Mouse::getPosition(m_window).x > m_paintData->menuBar.getBarWidth())
         {
           m_paintData->isDrawing = false;
+          m_paintData->isColorPicked = false;
         }
+      }
+      if (m_paintData->state == State::COLOR_PICKER && !m_paintData->isColorPicking)
+      {
+        m_paintData->isColorPicking = true;
       }
       break;
     case sf::Event::MouseMoved:

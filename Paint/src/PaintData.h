@@ -28,6 +28,7 @@ struct PaintData {
   sf::Vector2i       prevPixel;
   sf::Vector2i       lineStartCoords;
   sf::Vector2i       prevLine;
+  State              oldState;
   State              state;
   State              newState;
   int                eraserSize;

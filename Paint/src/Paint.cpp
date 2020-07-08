@@ -20,8 +20,8 @@ void Paint::initData()
   m_data.connectPixels = false;
   m_data.mouseLeftButtonState = ButtonState::RELEASED;
   m_data.isDrawing = false;
-  m_data.isColorPicking = false;
-  m_data.state = State::EMPTY_STATE;
+  m_data.isColorPicking = false; 
+  m_data.oldState = m_data.state = State::EMPTY_STATE;
   m_data.newState = State::MOUSE_CURSOR;
   m_data.drawColour = sf::Color::Black;
   m_data.sprite.setOrigin({ (float)m_data.menuBar.getBarWidth(), 0 });
@@ -71,10 +71,17 @@ void Paint::run()
     m_data.newState = m_data.menuBar.interact(getWindow(), m_data.state);
     if (m_data.newState != m_data.state)
     {
+      m_data.oldState = m_data.state;
       setMouseCursor();
     }
 
     m_data.state = m_data.newState;
+
+    if (m_data.state != State::COLOR_PICKER)
+    {
+      m_data.isColorPicking = false;
+      m_data.colorPicker.setSize({ 0,0 });
+    }
 
     m_window.display();
   }
@@ -240,60 +247,34 @@ void Paint::fillLogic()
 void Paint::colorPickLogic()
 {
   sf::Vector2i mouseCoords = m_window.getMouseCoords();
-  if (!m_data.isColorPicking)
+  if (m_data.isColorPicked)
   {
-    m_data.colorPicker.setPosition(sf::Vector2f(mouseCoords));
-
+    m_data.colorPicker.setSize({ 0,0 });
+    m_data.isColorPicking = false;
   }
   else
   {
-    if (mouseCoords.x >= m_data.colorPicker.getPosition().x
-     && mouseCoords.y >= m_data.colorPicker.getPosition().y
-     && mouseCoords.x <= m_data.colorPicker.getPosition().x + m_data.colorPicker.getSize().x
-     && mouseCoords.y <= m_data.colorPicker.getPosition().x + m_data.colorPicker.getSize().y
-     && m_data.isColorPicked)
+    if (mouseCoords.x >= (int)m_data.colorPicker.getPosition().x
+     && mouseCoords.y >= (int)m_data.colorPicker.getPosition().y
+     && mouseCoords.x <= (int)(m_data.colorPicker.getPosition().x + m_data.colorPicker.getSize().x)
+     && mouseCoords.y <= (int)(m_data.colorPicker.getPosition().y + m_data.colorPicker.getSize().y)
+     && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left)
+     && m_data.isColorPicking)
     {
-      m_data.colorPicker.setSize({ 0,0 });
-      printf("(r,g,b) = (%d,%d,%d)\n", m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a, m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).b,
-        m_data.pickerImage.getPixel(mouseCoords.x, mouseCoords.y).a);
+      m_data.drawColour = m_data.pickerImage.getPixel(mouseCoords.x - (int)m_data.colorPicker.getPosition().x
+                                                    , mouseCoords.y - (int)m_data.colorPicker.getPosition().y);
+
+      m_data.isColorPicking = false;
+      m_data.isColorPicked = true;
+      m_data.state = m_data.newState = m_data.oldState;
+      setMouseCursor();
     }
   }
-
-}
-
-bool Paint::getLMBstate()
-{
-  return m_data.mouseLeftButtonState;
-}
-
-void Paint::setLMBstate(ButtonState newState)
-{
-  m_data.mouseLeftButtonState = newState;
-}
-
-bool Paint::isDrawing()
-{
-  return m_data.isDrawing;
-}
-
-bool Paint::isColorPicked()
-{
-  return m_data.isColorPicked;
-}
-
-bool Paint::isColorPicking()
-{
-  return m_data.isColorPicking;
 }
 
 MenuBar* Paint::getMenuBar()
 {
   return &m_data.menuBar;
-}
-
-void Paint::setDrawing(bool newState)
-{
-  m_data.isDrawing = newState;
 }
 
 sf::RenderWindow& Paint::getWindow()
