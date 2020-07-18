@@ -1,6 +1,7 @@
 #ifndef H_STATE_H
 #define H_STATE_H
 
+//Enum to indicate the state in which the app is in
 enum class State {
   EMPTY_STATE  = 0,
   MOUSE_CURSOR = 1,

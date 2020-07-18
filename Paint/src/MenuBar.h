@@ -10,9 +10,9 @@ public:
   MenuBar(sf::Vector2f windowSize);
   virtual ~MenuBar();
 
-  void draw(sf::RenderWindow& window);
-  void addItem(std::string title, State state, std::string iconPath = "");
-  State interact(sf::RenderWindow& window, State oldState);
+  void      draw(sf::RenderWindow& window);
+  void      addItem(std::string title, State state, std::string iconPath = "");
+  State     interact(sf::RenderWindow& window, State oldState);
   const int getBarWidth() const;
 
 private:

@@ -1,5 +1,6 @@
 #include "MenuBar.h"
 
+//TODO: improve button layout when resizing window
 MenuBar::MenuBar(sf::Vector2f windowSize) : m_numItems(0),
   MenuObject({ windowSize.x / 15, windowSize.y }
            , { 0,0 }
@@ -24,7 +25,7 @@ MenuBar::~MenuBar()
 
 }
 
-
+//Add the default buttons
 void MenuBar::defaultButtonsSetup()
 {
   int x = m_menuObject.getSize().x;
@@ -38,6 +39,7 @@ void MenuBar::defaultButtonsSetup()
   addItem("ColorPicker" , State::COLOR_PICKER, "./texture/color_pick.png");
 }
 
+//Draw the menu bar first then draw all the buttons
 void MenuBar::draw(sf::RenderWindow& window)
 {
   window.draw(m_menuObject);
@@ -48,6 +50,7 @@ void MenuBar::draw(sf::RenderWindow& window)
   }
 }
 
+//Calls interact method of each button to detect a change of state
 State MenuBar::interact(sf::RenderWindow& window, State oldState)
 {
   State newState;
@@ -63,6 +66,7 @@ State MenuBar::interact(sf::RenderWindow& window, State oldState)
   return oldState;
 }
 
+//Adds a button to the menu bar
 void MenuBar::addItem(std::string title, State state, std::string iconPath)
 {
   float x = m_menuObject.getSize().x;

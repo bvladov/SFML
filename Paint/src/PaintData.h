@@ -7,13 +7,31 @@
 
 enum ButtonState {
   RELEASED = 0,
-  PRESSED = 1,
+  PRESSED  = 1
 };
 
 struct PaintData {
   PaintData(int width, int height)
-    : menuBar(sf::Vector2f(width, height))
-  {};
+    : menuBar(sf::Vector2f((float)width, (float)height))
+  {
+    eraserSize           = 20;
+    connectPixels        = false;
+    isDrawing            = false;
+    isColorPicking       = false;
+    isColorPicked        = false;
+    state                = State::EMPTY_STATE;
+    oldState             = State::EMPTY_STATE;
+    newState             = State::MOUSE_CURSOR;
+    mouseLeftButtonState = ButtonState::RELEASED;
+    drawColour           = sf::Color::Black;
+    sprite.setOrigin({ (float)menuBar.getBarWidth(), 0 });
+    sprite.setPosition({ (float)menuBar.getBarWidth(), 0 });
+    mouse.setSize(sf::Vector2f(0, 0));
+    pickerImage.loadFromFile("./texture/color_pick.png");
+    pickerTexture.loadFromImage(pickerImage);
+    colorPicker.setTexture(&pickerTexture);
+    colorPicker.setSize({ 0,0 });
+  };
 
   MenuBar            menuBar;
   sf::Image          image;

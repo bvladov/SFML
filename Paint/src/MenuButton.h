@@ -10,13 +10,17 @@
 class MenuButton : public MenuObject
 {
 public:
-    MenuButton(sf::Vector2f size, sf::Vector2f position, State state, std::string iconPath, std::string title = "");
+    MenuButton(sf::Vector2f size
+             , sf::Vector2f position
+             , State        state
+             , std::string  iconPath
+             , std::string  title = "");
     MenuButton(const MenuButton& other);
     virtual ~MenuButton();
 
-    void setIcon(std::string filename);
     virtual State interact(sf::RenderWindow& window, State oldState);
-    virtual void draw(sf::RenderWindow& window);
+    virtual void  draw(sf::RenderWindow& window);
+    void          setIcon(std::string filename);
 
 private:
     std::shared_ptr<sf::Texture> m_icon;

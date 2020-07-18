@@ -7,6 +7,8 @@ sf::Vector2f getRectangleCenter(const sf::RectangleShape& rect)
          , rect.getPosition().y - rect.getOrigin().y + rect.getSize().y / 2 };
 }
 
+//Implementation of Bresenham's line drawing algorithm
+//Translated from Matlab code studied in Computer Graphics course in FMI
 void BresenhamLine(sf::Vector2i a, sf::Vector2i b, sf::Color color, sf::Image& image)
 {
   int x1 = a.x;
@@ -74,6 +76,7 @@ float getDistance(const sf::RectangleShape& a, const sf::RectangleShape& b)
             + squared(b.getPosition().y - a.getPosition().y));
 }
 
+//Flood fill algorithm - iterative implementation using a queue
 void floodFill(const sf::Vector2i pos, sf::Color color, sf::Image& image, sf::Vector2u lowBounds, sf::Vector2u highBounds)
 {
   std::queue<sf::Vector2i> q;
