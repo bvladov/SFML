@@ -1,5 +1,4 @@
 #include <iostream>
-#include <winsqlite/winsqlite3.h>
 #include <string>
 #include "Paint.h"
 
